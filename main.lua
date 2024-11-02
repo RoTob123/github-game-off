@@ -2,9 +2,12 @@ require("sugarlove/sugarlove")
 local S = sugar.S
 local pal = S.palettes.sweetie16
 local fading = false
+local sugar_icon = 10
+local white_fade = 12
 
 function love.load()
     S.init_sugar("~ sugarlove ~", 320, 180, 3)
+    S.use_palette(S.palettes.sweetie16)
 
     S.load_png("sugarlove_logo", "sugarlove/icon.png", pal, true)
 
@@ -16,13 +19,32 @@ function love.update()
         fading = true
     end
     if fading then
-        S.clip(S.t(), S.t(), 100-S.t(), 100-S.t())
+        if S.t()%.2<.01 then
+            if sugar_icon>0 then
+                sugar_icon = sugar_icon - 1
+                if sugar_icon<8 then
+                    sugar_icon=0
+                end
+            end
+            if white_fade>0 then
+                white_fade=white_fade-1
+                if white_fade >3 then
+                    white_fade = 3
+                end
+            end
+        end
     end
 end
 
 function love.draw()
     S.cls()
-    S.use_palette(pal)
+    if fading then
+        if S.t()%.8<.015 then
+            S.pal(1, 0)
+        end
+    end
+    S.pal(10, sugar_icon, true)
+    S.pal(12, white_fade, true)
     S.tri(
         160+36*S.cos(S.t()/4), 90+36*S.sin(S.t()/4),
         160+36*S.cos(S.t()/4+0.333), 90+36*S.sin(S.t()/4+0.333),
@@ -34,7 +56,7 @@ function love.draw()
     for i = 1, #str do
         local clr
         if i<6 then
-            clr=10
+            clr=sugar_icon
         else
             clr=1
         end
